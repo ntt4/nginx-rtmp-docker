@@ -46,9 +46,7 @@ RUN mkdir -p /tmp/build/nginx && \
 RUN mkdir -p /tmp/build/nginx-rtmp-module && \
     cd /tmp/build/nginx-rtmp-module && \
     wget -O nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz https://github.com/arut/nginx-rtmp-module/archive/v${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
-    tar -zxf nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
-    cd nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION} && \
-    wget -O - https://raw.githubusercontent.com/gentoo/gentoo/6241ba18ca4a5e043a97ad11cf450c8d27b3079f/www-servers/nginx/files/rtmp-nginx-1.11.0.patch | patch
+    tar -zxf nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz
 
 # Build and install nginx
 RUN cd /tmp/build/nginx/${NGINX_VERSION} && \
