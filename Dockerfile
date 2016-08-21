@@ -1,9 +1,10 @@
-# Dockerfile for a simple Nginx stream replicator
+MAINTAINER Tavis Booth <tavis@i72d.com>
 
 # Software versions
 FROM alpine:3.4
-ENV NGINX_VERSION nginx-1.11.1
-ENV NGINX_RTMP_MODULE_VERSION 1.1.7.10
+ENV NGINX_VERSION nginx-1.11.3
+ENV NGINX_RTMP_MODULE_VERSION 1.1.9
+ENV FFMPEG_VERSION=3.1.2
 
 # Set up user
 ENV USER nginx
@@ -14,6 +15,27 @@ RUN apk --update --no-cache add ca-certificates build-base openssl openssl-dev &
     update-ca-certificates && \
     rm -rf /var/cache/apk/*
 
+# Download ffmpeg and compile via opencoconut/ffmpeg
+WORKDIR /tmp/ffmpeg
+
+RUN apk add --update curl nasm tar bzip2 \
+  zlib-dev yasm-dev lame-dev libogg-dev x264-dev libvpx-dev libvorbis-dev x265-dev freetype-dev libass-dev libwebp-dev rtmpdump-dev libtheora-dev opus-dev && \
+
+  DIR=$(mktemp -d) && cd ${DIR} && \
+
+  curl -s http://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz | tar zxvf - -C . && \
+  cd ffmpeg-${FFMPEG_VERSION} && \
+  ./configure \
+  --enable-version3 --enable-gpl --enable-nonfree --enable-small --enable-libmp3lame --enable-libx264 --enable-libx265 --enable-libvpx --enable-libtheora --enable-libvorbis --enable-libopus --enable-libass --enable-libwebp --enable-librtmp --enable-postproc --enable-avresample --enable-libfreetype --enable-openssl --disable-debug && \
+  make && \
+  make install && \
+  make distclean && \
+
+  rm -rf ${DIR} && \
+  apk del build-base curl tar bzip2 x264 openssl nasm && rm -rf /var/cache/apk/*
+
+ENTRYPOINT ["ffmpeg"]
+
 # Download nginx
 RUN mkdir -p /tmp/build/nginx && \
     cd /tmp/build/nginx && \
@@ -23,7 +45,7 @@ RUN mkdir -p /tmp/build/nginx && \
 # Download the RTMP module
 RUN mkdir -p /tmp/build/nginx-rtmp-module && \
     cd /tmp/build/nginx-rtmp-module && \
-    wget -O nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz https://github.com/sergey-dryabzhinsky/nginx-rtmp-module/archive/v${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
+    wget -O nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz https://github.com/arut/nginx-rtmp-module/archive/v${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
     tar -zxf nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
     cd nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION} && \
     wget -O - https://raw.githubusercontent.com/gentoo/gentoo/6241ba18ca4a5e043a97ad11cf450c8d27b3079f/www-servers/nginx/files/rtmp-nginx-1.11.0.patch | patch
