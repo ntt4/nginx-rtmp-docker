@@ -36,7 +36,7 @@ RUN apk add --update curl nasm tar bzip2 \
 
 ENTRYPOINT ["ffmpeg"]
 
-RUN apk --update add ca-certificates openssl \
+RUN apk --update add ca-certificates openssl && \
     update-ca-certificates
 
 # Download nginx
