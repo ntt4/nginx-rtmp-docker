@@ -124,5 +124,5 @@ RUN chmod 444 /etc/nginx/nginx.conf && \
 USER ${USER}
 EXPOSE 1935
 CMD ["nginx", "-g", "daemon off;"]
-VOLUME /etc/nginx/ /recorded
+VOLUME /etc/nginx /recorded
 
