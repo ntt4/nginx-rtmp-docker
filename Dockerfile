@@ -1,7 +1,7 @@
+FROM alpine:3.4
 MAINTAINER Tavis Booth <tavis@i72d.com>
 
 # Software versions
-FROM alpine:3.4
 ENV NGINX_VERSION nginx-1.11.3
 ENV NGINX_RTMP_MODULE_VERSION 1.1.9
 ENV FFMPEG_VERSION=3.1.2
