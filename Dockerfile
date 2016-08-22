@@ -4,16 +4,15 @@ MAINTAINER Tavis Booth <tavis@i72d.com>
 # Software versions
 ENV NGINX_VERSION nginx-1.11.3
 ENV NGINX_RTMP_MODULE_VERSION 1.1.9
-ENV FFMPEG_VERSION=3.1.2
+ENV FFMPEG_VERSION 3.1.2
 
 # Set up user
 ENV USER nginx
 RUN adduser -s /sbin/nologin -D -H ${USER}
 
 # Install prerequisites and update certificates
-RUN apk --update --no-cache add ca-certificates build-base openssl openssl-dev && \
-    update-ca-certificates && \
-    rm -rf /var/cache/apk/*
+RUN apk --update --no-cache add ca-certificates build-base openssl openssl-dev gcc && \
+    update-ca-certificates
 
 # Download ffmpeg and compile via opencoconut/ffmpeg
 RUN apk add --update curl nasm tar bzip2 \
@@ -28,8 +27,6 @@ RUN apk add --update curl nasm tar bzip2 \
   make && \
   make install && \
   make distclean
-
-ENTRYPOINT ["ffmpeg"]
 
 RUN apk --update add ca-certificates openssl gcc && \
     update-ca-certificates
